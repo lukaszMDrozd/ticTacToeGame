@@ -1,0 +1,29 @@
+#grid {
+    -fx-background-color: azure;
+}
+
+#HBox00, #HBox01, #HBox10, #HBox11 {
+    -fx-border-style: hidden solid solid hidden;
+    -fx-border-color: greenyellow;
+}
+
+#HBox02, #HBox12 {
+    -fx-border-style: hidden hidden solid hidden;
+    -fx-border-color: greenyellow;
+}
+
+#HBox20, #HBox21 {
+    -fx-border-style: hidden solid hidden hidden;
+    -fx-border-color: greenyellow;
+}
+
+.defaultColor {
+    -fx-fill: azure;
+    -fx-stroke: greenyellow;
+}
+
+.correctChoice {
+    -fx-fill: greenyellow;
+    -fx-stroke: greenyellow;
+}
+
