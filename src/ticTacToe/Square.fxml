@@ -4,11 +4,11 @@
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.shape.Circle?>
 
-<fx:root type="StackPane" xmlns:fx="http://javafx.com/fxml" styleClass="stackPane">
-        <Circle styleClass="defaultShape" radius="65">
+<fx:root type="StackPane" xmlns:fx="http://javafx.com/fxml">
+        <Circle styleClass="defaultShape" radius="60">
 
         </Circle>
-        <Button styleClass="defaultShape" prefWidth="130" prefHeight="130" opacity="0" >
+        <Button styleClass="defaultShape" prefWidth="140" prefHeight="140" opacity="0" >
 
         </Button>
 </fx:root>

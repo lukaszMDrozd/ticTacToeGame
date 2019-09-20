@@ -2,8 +2,8 @@
     -fx-padding: 5 5 10 5;
     -fx-border-style: solid hidden hidden hidden;
     -fx-border-width: 5;
-    -fx-border-color: rgb(214, 149, 128);
-    -fx-background-color: rgba(214, 214, 128, 0.6);
+    -fx-border-color: rgba(255, 0, 128, 0.3);
+    -fx-background-color: rgba(214, 240, 128, 0.6);
 }
 
 .bottomElements, .topElements {
@@ -14,27 +14,39 @@
 
 .defaultShape {
     -fx-fill: azure;
-    -fx-stroke: rgba(214, 214, 128, 0.6);
+    -fx-stroke: rgba(214, 240, 128, 0.8);
 }
 
-.correctShapeChoice {
+.humanCircleChoice {
     -fx-fill: greenyellow;
     -fx-stroke: greenyellow ;
 }
 
-.stackPane {
-    -fx-padding: 2 2 2 2;
+.computerCircleChoice {
+    -fx-fill: red;
+    -fx-stroke: red ;
 }
 
 .top {
     -fx-padding: 10 5 5 5;
     -fx-border-style: hidden hidden solid hidden;
     -fx-border-width: 5;
-    -fx-border-color: rgb(214, 149, 128);
-    -fx-background-color: rgba(214, 214, 128, 0.6);
+    -fx-border-color: rgba(255, 0, 128, 0.3);
+    -fx-background-color: rgba(214, 240, 128, 0.6);
 }
 
 .default {
     -fx-background-color: azure;
+}
+
+.gridRow {
+    -fx-background-color: rgba(214, 149, 128, 0.6), azure ;
+    -fx-background-insets: 0, 0 0 2 0 ;
+}
+
+.gridColumn {
+    -fx-border-color: rgba(214, 149, 128, 0.6);
+    -fx-border-width: 2;
+    -fx-border-style: hidden solid hidden hidden;
 }
 
