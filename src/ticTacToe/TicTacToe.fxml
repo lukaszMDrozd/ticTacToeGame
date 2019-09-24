@@ -6,7 +6,7 @@
 
 <?import javafx.scene.layout.GridPane?>
 
-<BorderPane fx:controller="ticTacToe.TicTacToeController" prefHeight="800" prefWidth="800" xmlns:fx="http://javafx.com/fxml" styleClass="default">
+<BorderPane fx:controller="ticTacToe.GameController" prefHeight="800" prefWidth="800" xmlns:fx="http://javafx.com/fxml" styleClass="default">
     <top>
         <HBox styleClass="top" alignment="CENTER" >
             <Button fx:id="easyButton" alignment="CENTER" text="EASY MODE" styleClass="topElements">
@@ -27,10 +27,10 @@
     </center>
     <bottom>
         <HBox styleClass="bottom" alignment="CENTER">
-            <Button fx:id="resetButton" alignment="CENTER" text="RESET GAME" styleClass="bottomElements">
+            <Button fx:id="resetButton" alignment="CENTER" text="REVERT MOVE" styleClass="bottomElements">
 
             </Button>
-            <Button fx:id="startButton" alignment="CENTER" text="START GAME" styleClass="bottomElements">
+            <Button fx:id="gameButtonControl" alignment="CENTER" text="START GAME" styleClass="bottomElements">
 
             </Button>
         </HBox>
