@@ -27,7 +27,7 @@
     </center>
     <bottom>
         <HBox styleClass="bottom" alignment="CENTER">
-            <Button fx:id="resetButton" alignment="CENTER" text="REVERT MOVE" styleClass="bottomElements">
+            <Button fx:id="resetButton" alignment="CENTER" text="RESET MOVE" styleClass="bottomElements">
 
             </Button>
             <Button fx:id="gameButtonControl" alignment="CENTER" text="START GAME" styleClass="bottomElements">

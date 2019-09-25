@@ -7,7 +7,7 @@ public class Game {
     private HumanPlayer humanPlayer;
     private ComputerPlayer computerPlayer;
     private int spanNumber;
-    private Player activePlayer;
+//    private Player activePlayer;
     private List<List<Integer>> availableMoves;
 
     public Game(HumanPlayer humanPlayer, ComputerPlayer computerPlayer, int spanNumber, List<List<Integer>> availableMoves) {
@@ -33,13 +33,13 @@ public class Game {
         return spanNumber;
     }
 
-    Player getActivePlayer() {
-        return activePlayer;
-    }
-
-    void setActivePlayer(Player activePlayer) {
-        this.activePlayer = activePlayer;
-    }
+//    Player getActivePlayer() {
+//        return activePlayer;
+//    }
+//
+//    void setActivePlayer(Player activePlayer) {
+//        this.activePlayer = activePlayer;
+//    }
 
     public List<List<Integer>> getAvailableMoves() {
         return availableMoves;

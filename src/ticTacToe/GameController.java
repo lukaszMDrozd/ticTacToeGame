@@ -46,6 +46,7 @@ public class GameController implements Initializable {
         return spanNumber;
     }
 
+
     private boolean clicked;
 
     private boolean isClicked() {
@@ -56,27 +57,41 @@ public class GameController implements Initializable {
         this.clicked = clicked;
     }
 
+
     private List<List<Integer>> availableMoves;
 
-    public List<List<Integer>> getAvailableMoves() {
+    private List<List<Integer>> getAvailableMoves() {
         return availableMoves;
     }
 
-    public void setAvailableMoves(List<List<Integer>> availableMoves) {
+    private void setAvailableMoves(List<List<Integer>> availableMoves) {
         this.availableMoves = availableMoves;
     }
 
+
     private List<Integer> clickedButton;
 
-    public List<Integer> getClickedButton() {
+    private List<Integer> getClickedButton() {
         return clickedButton;
     }
 
-    public void setClickedButton(List<Integer> clickedButton) {
+    private void setClickedButton(List<Integer> clickedButton) {
         this.clickedButton = clickedButton;
     }
 
-    private Game game =  new Game(new HumanPlayer("John"), new ComputerPlayer("My Best Computer"), getSpanNumber(), getAvailableMoves());
+    private Player actualPlayer;
+
+    private Player getActualPlayer() {
+        return actualPlayer;
+    }
+
+    private void setActualPlayer(Player actualPlayer) {
+        this.actualPlayer = actualPlayer;
+    }
+
+    private HumanPlayer humanPlayer = new HumanPlayer("John");
+
+    private ComputerPlayer computerPlayer = new ComputerPlayer("My Best Computer");
 
 
     @Override
@@ -86,10 +101,10 @@ public class GameController implements Initializable {
         setMediumButtonEvent();
         setHardButtonEvent();
         setResetButton();
-        setAvailableMoves(makeGrid(getSpanNumber()));
+        setAvailableMoves(makeGrid(spanNumber));
         resetButton.setDisable(true);
-        game.setActivePlayer(game.getHumanPlayer());
-        gridButtonEvent();
+        setActualPlayer(humanPlayer);
+        gameButtonControlEvent();
     }
 
     private void setMediumButtonEvent() {
@@ -102,22 +117,22 @@ public class GameController implements Initializable {
         });
     }
 
-    private void gridButtonEvent() {
+    private void gameButtonControlEvent() {
         gameButtonControl.setOnMouseClicked(event -> {
+            Game game = new Game(humanPlayer, computerPlayer, getSpanNumber(), getAvailableMoves());
 
-            if (game.getActivePlayer().equals(game.getHumanPlayer())) {
+            if (getActualPlayer().equals(game.getHumanPlayer())) {
                 System.out.println(gameButtonControl.textProperty());
                 setClicked(true);
                 setGridButtonsClickEvent(getSpanNumber());
-                game.getHumanPlayer().makeMove();
-                gameButtonControl.textProperty().setValue("MAKE MOVE");
-                game.setActivePlayer(game.getComputerPlayer());
-                System.out.println(getClickedButton());
+                gameButtonControl.textProperty().setValue("CONFIRM MOVE");
+                recalculateAvailableMovesList();
+                setActualPlayer(game.getComputerPlayer());
             }
-            else if (game.getActivePlayer().equals(game.getComputerPlayer())) {
+            else if (getActualPlayer().equals(game.getComputerPlayer())) {
+                gameButtonControl.textProperty().setValue("COMPUTER ON MOVE");
                 game.getComputerPlayer().makeMove();
-                gameButtonControl.textProperty().setValue("WAIT");
-                game.setActivePlayer(game.getHumanPlayer());
+                setActualPlayer(game.getHumanPlayer());
             }
         });
     }
@@ -166,7 +181,6 @@ public class GameController implements Initializable {
                 }
             }
         }
-        System.out.println(startingButtonsCoordinates);
         return startingButtonsCoordinates;
     }
 
@@ -193,33 +207,35 @@ public class GameController implements Initializable {
     }
 
     private void setButtonClickEvent(StackPane stackPane) {
-        List<Integer> buttonCoordinates = new ArrayList<>();
         Circle circle = (Circle) stackPane.getChildren().get(0);
         Button button = (Button) stackPane.getChildren().get(1);
 
             button.setOnMouseClicked(event -> {
+                List<Integer> buttonCoordinates = new ArrayList<>();
+                buttonCoordinates.add(GridPane.getRowIndex(button.getParent()));
+                buttonCoordinates.add(GridPane.getColumnIndex(button.getParent()));
+
                 if (event.getButton() == MouseButton.PRIMARY && isClicked()) {
                     if(circle.getStyleClass().toString().equals("defaultShape")) {
                         resetButton.setDisable(true);
                     }
+
                     circle.getStyleClass().remove("defaultShape");
                     circle.getStyleClass().add("humanCircleChoice");
 
-                    buttonCoordinates.add(GridPane.getRowIndex(button.getParent()));
-                    buttonCoordinates.add(GridPane.getColumnIndex(button.getParent()));
+                    setClicked(false);
                     setClickedButton(buttonCoordinates);
 
-                    System.out.println(buttonCoordinates);
-
-                    setClicked(false);
+//                    buttonCoordinates.clear();
+                    System.out.println(getClickedButton());
                 }
-                else if (event.getButton() == MouseButton.SECONDARY && !isClicked()) {
+                else if (event.getButton() == MouseButton.SECONDARY && !isClicked() && getAvailableMoves().contains(buttonCoordinates)) {
                     if(circle.getStyleClass().toString().equals("humanCircleChoice")) {
                         resetButton.setDisable(false);
                     }
-                    circle.getStyleClass().remove("humanCircleChoice");
-                    circle.getStyleClass().add("defaultShape");
-                    System.out.println(isClicked());
+                        circle.getStyleClass().remove("humanCircleChoice");
+                        circle.getStyleClass().add("defaultShape");
+                        System.out.println(isClicked());
                 }
             });
     }
@@ -229,5 +245,11 @@ public class GameController implements Initializable {
             setClicked(true);
             resetButton.setDisable(true);
         });
+    }
+
+    private void recalculateAvailableMovesList() {
+        System.out.println(getClickedButton());
+        getAvailableMoves().remove(getClickedButton());
+        System.out.println("Dostępne ruchy: " + availableMoves);
     }
 }
