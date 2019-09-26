@@ -1,6 +1,8 @@
 package ticTacToe;
 
+import java.util.List;
+
 public interface Player {
 
-    void makeMove();
+    List<Integer> makeMove(List<List<Integer>> availableMoves, int spanNumber);
 }

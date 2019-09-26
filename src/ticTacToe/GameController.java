@@ -36,6 +36,9 @@ public class GameController implements Initializable {
     @FXML
     private Button hardButton;
 
+    @FXML
+    private Button confirmButton;
+
     private int spanNumber;
 
     private void setSpanNumber(int spanNumber) {
@@ -93,6 +96,8 @@ public class GameController implements Initializable {
 
     private ComputerPlayer computerPlayer = new ComputerPlayer("My Best Computer");
 
+    private Game game;
+
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
@@ -105,6 +110,8 @@ public class GameController implements Initializable {
         resetButton.setDisable(true);
         setActualPlayer(humanPlayer);
         gameButtonControlEvent();
+        confirmMoveButtonEvent();
+        this.game = new Game(humanPlayer, computerPlayer, getSpanNumber(), getAvailableMoves());
     }
 
     private void setMediumButtonEvent() {
@@ -112,28 +119,32 @@ public class GameController implements Initializable {
             if (event.getButton() == MouseButton.PRIMARY) {
                 setSpanNumber(3);
                 gridPane.getChildren().clear();
-                makeGrid(getSpanNumber());
+                setAvailableMoves(makeGrid(getSpanNumber()));
             }
         });
     }
 
     private void gameButtonControlEvent() {
         gameButtonControl.setOnMouseClicked(event -> {
-            Game game = new Game(humanPlayer, computerPlayer, getSpanNumber(), getAvailableMoves());
+            gameButtonControl.textProperty().setValue("YOUR MOVE");
 
             if (getActualPlayer().equals(game.getHumanPlayer())) {
-                System.out.println(gameButtonControl.textProperty());
                 setClicked(true);
+                System.out.println(gameButtonControl.textProperty());
                 setGridButtonsClickEvent(getSpanNumber());
-                gameButtonControl.textProperty().setValue("CONFIRM MOVE");
                 recalculateAvailableMovesList();
-                setActualPlayer(game.getComputerPlayer());
             }
-            else if (getActualPlayer().equals(game.getComputerPlayer())) {
-                gameButtonControl.textProperty().setValue("COMPUTER ON MOVE");
-                game.getComputerPlayer().makeMove();
-                setActualPlayer(game.getHumanPlayer());
-            }
+        });
+    }
+
+    private void confirmMoveButtonEvent() {
+        confirmButton.setOnMouseClicked(event -> {
+            List<Integer> coordinates = computerPlayer.makeMove(availableMoves, getSpanNumber());
+            setClickedButton(coordinates);
+            recalculateAvailableMovesList();
+            StackPane stackPane = (StackPane) getNodeByRowColumnIndex(coordinates.get(0), coordinates.get(1), gridPane);
+            stackPane.getChildren().get(0).getStyleClass().add("computerCircleChoice");
+            coordinates.clear();
         });
     }
 
@@ -142,7 +153,8 @@ public class GameController implements Initializable {
             if (event.getButton() == MouseButton.PRIMARY) {
                 setSpanNumber(4);
                 gridPane.getChildren().clear();
-                makeGrid(getSpanNumber());
+                setAvailableMoves(makeGrid(getSpanNumber()));
+                System.out.println("Range in hard Button" + getSpanNumber());
             }
         });
     }
@@ -152,13 +164,13 @@ public class GameController implements Initializable {
             if (event.getButton() == MouseButton.PRIMARY) {
                 setSpanNumber(2);
                 gridPane.getChildren().clear();
-                makeGrid(getSpanNumber());
+                setAvailableMoves(makeGrid(getSpanNumber()));
             }
         });
     }
 
     private List<List<Integer>> makeGrid(int spanNumber) {
-        List<List<Integer>> startingButtonsCoordinates = new ArrayList<>();
+        List<List<Integer>> buttonStartingCoordinates = new ArrayList<>();
 
         for (int row = 0; row <= spanNumber; row++) {
             for (int column = 0; column <= spanNumber; column++) {
@@ -167,7 +179,7 @@ public class GameController implements Initializable {
                     List<Integer> buttonCoordinates = new ArrayList<>();
                     buttonCoordinates.add(row);
                     buttonCoordinates.add(column);
-                    startingButtonsCoordinates.add(buttonCoordinates);
+                    buttonStartingCoordinates.add(buttonCoordinates);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -181,7 +193,7 @@ public class GameController implements Initializable {
                 }
             }
         }
-        return startingButtonsCoordinates;
+        return buttonStartingCoordinates;
     }
 
     private void setGridButtonsClickEvent(int SpanNumber) {
@@ -215,27 +227,28 @@ public class GameController implements Initializable {
                 buttonCoordinates.add(GridPane.getRowIndex(button.getParent()));
                 buttonCoordinates.add(GridPane.getColumnIndex(button.getParent()));
 
-                if (event.getButton() == MouseButton.PRIMARY && isClicked()) {
-                    if(circle.getStyleClass().toString().equals("defaultShape")) {
-                        resetButton.setDisable(true);
+                if(actualPlayer.equals(game.getHumanPlayer()) && !circle.getStyleClass().toString().equals("computerCircleChoice")) {
+                    if (event.getButton() == MouseButton.PRIMARY && isClicked()) {
+//                        if(circle.getStyleClass().toString().equals("defaultShape")) {
+//                            resetButton.setDisable(true);
+//                        }
+
+                        circle.getStyleClass().remove("defaultShape");
+                        circle.getStyleClass().add("humanCircleChoice");
+
+                        setClicked(false);
+                        setClickedButton(buttonCoordinates);
+
+                        System.out.println(getClickedButton());
                     }
-
-                    circle.getStyleClass().remove("defaultShape");
-                    circle.getStyleClass().add("humanCircleChoice");
-
-                    setClicked(false);
-                    setClickedButton(buttonCoordinates);
-
-//                    buttonCoordinates.clear();
-                    System.out.println(getClickedButton());
-                }
-                else if (event.getButton() == MouseButton.SECONDARY && !isClicked() && getAvailableMoves().contains(buttonCoordinates)) {
-                    if(circle.getStyleClass().toString().equals("humanCircleChoice")) {
-                        resetButton.setDisable(false);
-                    }
+                    else if (event.getButton() == MouseButton.SECONDARY && !isClicked() && getAvailableMoves().contains(buttonCoordinates)) {
+                        if(circle.getStyleClass().toString().equals("humanCircleChoice")) {
+                            resetButton.setDisable(false);
+                        }
                         circle.getStyleClass().remove("humanCircleChoice");
                         circle.getStyleClass().add("defaultShape");
                         System.out.println(isClicked());
+                    }
                 }
             });
     }
@@ -250,6 +263,6 @@ public class GameController implements Initializable {
     private void recalculateAvailableMovesList() {
         System.out.println(getClickedButton());
         getAvailableMoves().remove(getClickedButton());
-        System.out.println("Dostępne ruchy: " + availableMoves);
+        System.out.println("Dostępne ruchy: " + getAvailableMoves());
     }
 }

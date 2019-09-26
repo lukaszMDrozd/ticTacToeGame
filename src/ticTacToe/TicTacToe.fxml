@@ -33,6 +33,9 @@
             <Button fx:id="gameButtonControl" alignment="CENTER" text="START GAME" styleClass="bottomElements">
 
             </Button>
+            <Button fx:id="confirmButton" alignment="CENTER" text="CONFIRM MOVE" styleClass="bottomElements">
+
+            </Button>
         </HBox>
     </bottom>
 </BorderPane>
