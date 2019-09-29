@@ -20,6 +20,10 @@ public class ComputerPlayer implements Player{
         List<Integer> result = new ArrayList<>();
 
         do {
+            if(result.size() != 0) {
+                result.clear();
+            }
+
             int xCoordinate = new Random().nextInt(spanNumber + 1);
             int yCoordinate = new Random().nextInt(spanNumber + 1);
 
@@ -35,4 +39,5 @@ public class ComputerPlayer implements Player{
     private String getComputerName() {
         return computerName;
     }
+
 }

@@ -18,6 +18,10 @@
             <Button fx:id="hardButton" alignment="CENTER" text="HARD MODE" styleClass="topElements">
 
             </Button>
+
+            <Button fx:id="gameStatusButton" alignment="CENTER" text=" " styleClass="topElements">
+
+            </Button>
         </HBox>
     </top>
     <center>

@@ -39,6 +39,9 @@ public class GameController implements Initializable {
     @FXML
     private Button confirmButton;
 
+    @FXML
+    private Button gameStatusButton;
+
     private int spanNumber;
 
     private void setSpanNumber(int spanNumber) {
@@ -48,7 +51,6 @@ public class GameController implements Initializable {
     private int getSpanNumber() {
         return spanNumber;
     }
-
 
     private boolean clicked;
 
@@ -71,12 +73,7 @@ public class GameController implements Initializable {
         this.availableMoves = availableMoves;
     }
 
-
     private List<Integer> clickedButton;
-
-    private List<Integer> getClickedButton() {
-        return clickedButton;
-    }
 
     private void setClickedButton(List<Integer> clickedButton) {
         this.clickedButton = clickedButton;
@@ -98,6 +95,15 @@ public class GameController implements Initializable {
 
     private Game game;
 
+    private List<List<Integer>> humanMadeMoves;
+
+    private List<List<Integer>> computerMadeMoves;
+
+    private boolean gameStatus;
+
+    public void setGameStatus(boolean gameStatus) {
+        this.gameStatus = gameStatus;
+    }
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
@@ -111,7 +117,55 @@ public class GameController implements Initializable {
         setActualPlayer(humanPlayer);
         gameButtonControlEvent();
         confirmMoveButtonEvent();
-        this.game = new Game(humanPlayer, computerPlayer, getSpanNumber(), getAvailableMoves());
+        humanMadeMoves = new ArrayList<>();
+        computerMadeMoves = new ArrayList<>();
+        this.game = new Game(humanPlayer, computerPlayer);
+        gameStatus = false;
+        gameStatusButton.setDisable(true);
+    }
+
+    private void gameButtonControlEvent() {
+        gameButtonControl.setOnMouseClicked(event -> {
+            gameButtonControl.textProperty().setValue("MAKE MOVE");
+
+            if (getActualPlayer().equals(game.getHumanPlayer())) {
+                setClicked(true);
+                setGridButtonsClickEvent(getSpanNumber());
+            }
+        });
+    }
+
+    private void confirmMoveButtonEvent() {
+        confirmButton.setOnMouseClicked(event -> {
+                setGameStatus(isGameOn(humanMadeMoves));
+                System.out.println("Klika człowiek " + isGameOn(humanMadeMoves));
+                System.out.println(gameStatus);
+                recalculateAvailableMovesList();
+                List<Integer> coordinates = computerPlayer.makeMove(availableMoves, getSpanNumber());
+                setClickedButton(coordinates);
+                computerMadeMoves.add(coordinates);
+                StackPane stackPane = (StackPane) getNodeByRowColumnIndex(coordinates.get(0), coordinates.get(1), gridPane);
+                stackPane.getChildren().get(0).getStyleClass().add("computerCircleChoice");
+                recalculateAvailableMovesList();
+                setGameStatus(isGameOn(computerMadeMoves));
+                System.out.println(gameStatus);
+                coordinates.clear();
+
+                if (gameStatus){
+                gameStatusButton.setDisable(false);
+                gameStatusButton.textProperty().setValue("ZWYCIĘŻYŁEŚ");
+                }
+        });
+    }
+
+    private void setEasyButtonEvent() {
+        easyButton.setOnMouseClicked(event -> {
+            if (event.getButton() == MouseButton.PRIMARY) {
+                setSpanNumber(2);
+                gridPane.getChildren().clear();
+                setAvailableMoves(makeGrid(getSpanNumber()));
+            }
+        });
     }
 
     private void setMediumButtonEvent() {
@@ -124,30 +178,6 @@ public class GameController implements Initializable {
         });
     }
 
-    private void gameButtonControlEvent() {
-        gameButtonControl.setOnMouseClicked(event -> {
-            gameButtonControl.textProperty().setValue("YOUR MOVE");
-
-            if (getActualPlayer().equals(game.getHumanPlayer())) {
-                setClicked(true);
-                System.out.println(gameButtonControl.textProperty());
-                setGridButtonsClickEvent(getSpanNumber());
-                recalculateAvailableMovesList();
-            }
-        });
-    }
-
-    private void confirmMoveButtonEvent() {
-        confirmButton.setOnMouseClicked(event -> {
-            List<Integer> coordinates = computerPlayer.makeMove(availableMoves, getSpanNumber());
-            setClickedButton(coordinates);
-            recalculateAvailableMovesList();
-            StackPane stackPane = (StackPane) getNodeByRowColumnIndex(coordinates.get(0), coordinates.get(1), gridPane);
-            stackPane.getChildren().get(0).getStyleClass().add("computerCircleChoice");
-            coordinates.clear();
-        });
-    }
-
     private void setHardButtonEvent() {
         hardButton.setOnMouseClicked(event -> {
             if (event.getButton() == MouseButton.PRIMARY) {
@@ -155,16 +185,6 @@ public class GameController implements Initializable {
                 gridPane.getChildren().clear();
                 setAvailableMoves(makeGrid(getSpanNumber()));
                 System.out.println("Range in hard Button" + getSpanNumber());
-            }
-        });
-    }
-
-    private void setEasyButtonEvent() {
-        easyButton.setOnMouseClicked(event -> {
-            if (event.getButton() == MouseButton.PRIMARY) {
-                setSpanNumber(2);
-                gridPane.getChildren().clear();
-                setAvailableMoves(makeGrid(getSpanNumber()));
             }
         });
     }
@@ -229,17 +249,12 @@ public class GameController implements Initializable {
 
                 if(actualPlayer.equals(game.getHumanPlayer()) && !circle.getStyleClass().toString().equals("computerCircleChoice")) {
                     if (event.getButton() == MouseButton.PRIMARY && isClicked()) {
-//                        if(circle.getStyleClass().toString().equals("defaultShape")) {
-//                            resetButton.setDisable(true);
-//                        }
-
                         circle.getStyleClass().remove("defaultShape");
                         circle.getStyleClass().add("humanCircleChoice");
 
                         setClicked(false);
                         setClickedButton(buttonCoordinates);
-
-                        System.out.println(getClickedButton());
+                        humanMadeMoves.add(buttonCoordinates);
                     }
                     else if (event.getButton() == MouseButton.SECONDARY && !isClicked() && getAvailableMoves().contains(buttonCoordinates)) {
                         if(circle.getStyleClass().toString().equals("humanCircleChoice")) {
@@ -261,8 +276,88 @@ public class GameController implements Initializable {
     }
 
     private void recalculateAvailableMovesList() {
-        System.out.println(getClickedButton());
-        getAvailableMoves().remove(getClickedButton());
-        System.out.println("Dostępne ruchy: " + getAvailableMoves());
+        availableMoves.remove(clickedButton);
+        System.out.println("Wybrany przycik: " + clickedButton);
+        System.out.println("Dostępne ruchy: " + availableMoves);
+        System.out.println("Human made moves: " + humanMadeMoves);
+        System.out.println("Computer made moves: " + computerMadeMoves);
+        System.out.println("Wyniki " + winningMoves());
+    }
+
+    private boolean isGameOn(List<List<Integer>> madeMoves) {
+        for (int i = 0; i < 6; i++) {
+            if(winningMoves().get(i).containsAll(madeMoves) && madeMoves.size() >= 3) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private List<List<List<Integer>>> winningMoves() {
+        List<List<List<Integer>>> result = new ArrayList<>();
+
+        for (int row = 0; row < 3; row++) {
+            List<List<Integer>> stepResult = new ArrayList<>();
+            for (int column = 0; column < 3; column++) {
+                switch (row) {
+                    case 0: {
+                        List<Integer> resultAtom = new ArrayList<>();
+                        resultAtom.add(0);
+                        resultAtom.add(column);
+                        stepResult.add(resultAtom);
+                        break;
+                    }
+
+                    case 1: {
+                        List<Integer> resultAtom = new ArrayList<>();
+                        resultAtom.add(1);
+                        resultAtom.add(column);
+                        stepResult.add(resultAtom);
+                        break;
+                    }
+                    case 2: {
+                        List<Integer> resultAtom = new ArrayList<>();
+                        resultAtom.add(2);
+                        resultAtom.add(column);
+                        stepResult.add(resultAtom);
+                        break;
+                    }
+                }
+            }
+            result.add(stepResult);
+        }
+
+        for (int column = 0; column < 3; column++) {
+            List<List<Integer>> stepResult = new ArrayList<>();
+            for (int row = 0; row < 3; row++) {
+                switch (column) {
+                    case 0: {
+                        List<Integer> resultAtom = new ArrayList<>();
+                        resultAtom.add(row);
+                        resultAtom.add(0);
+                        stepResult.add(resultAtom);
+                        break;
+                    }
+
+                    case 1: {
+                        List<Integer> resultAtom = new ArrayList<>();
+                        resultAtom.add(row);
+                        resultAtom.add(1);
+                        stepResult.add(resultAtom);
+                        break;
+                    }
+                    case 2: {
+                        List<Integer> resultAtom = new ArrayList<>();
+                        resultAtom.add(row);
+                        resultAtom.add(2);
+                        stepResult.add(resultAtom);
+                        break;
+                    }
+                }
+            }
+            result.add(stepResult);
+        }
+
+        return result;
     }
 }
