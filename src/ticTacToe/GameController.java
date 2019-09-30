@@ -101,7 +101,7 @@ public class GameController implements Initializable {
 
     private boolean gameStatus;
 
-    public void setGameStatus(boolean gameStatus) {
+    private void setGameStatus(boolean gameStatus) {
         this.gameStatus = gameStatus;
     }
 
@@ -127,7 +127,9 @@ public class GameController implements Initializable {
     private void gameButtonControlEvent() {
         gameButtonControl.setOnMouseClicked(event -> {
             gameButtonControl.textProperty().setValue("MAKE MOVE");
-
+            easyButton.setDisable(true);
+            mediumButton.setDisable(true);
+            hardButton.setDisable(true);
             if (getActualPlayer().equals(game.getHumanPlayer())) {
                 setClicked(true);
                 setGridButtonsClickEvent(getSpanNumber());
@@ -137,25 +139,37 @@ public class GameController implements Initializable {
 
     private void confirmMoveButtonEvent() {
         confirmButton.setOnMouseClicked(event -> {
-                setGameStatus(isGameOn(humanMadeMoves));
-                System.out.println("Klika człowiek " + isGameOn(humanMadeMoves));
-                System.out.println(gameStatus);
-                recalculateAvailableMovesList();
-                List<Integer> coordinates = computerPlayer.makeMove(availableMoves, getSpanNumber());
-                setClickedButton(coordinates);
-                computerMadeMoves.add(coordinates);
-                StackPane stackPane = (StackPane) getNodeByRowColumnIndex(coordinates.get(0), coordinates.get(1), gridPane);
-                stackPane.getChildren().get(0).getStyleClass().add("computerCircleChoice");
-                recalculateAvailableMovesList();
-                setGameStatus(isGameOn(computerMadeMoves));
-                System.out.println(gameStatus);
-                coordinates.clear();
-
-                if (gameStatus){
-                gameStatusButton.setDisable(false);
-                gameStatusButton.textProperty().setValue("ZWYCIĘŻYŁEŚ");
+            setGameStatus(isGameOn(humanMadeMoves));
+            isGameEnd(gameStatus);
+            recalculateAvailableMovesList();
+            if(!gameStatus) {
+                if (availableMoves.size() != 0) {
+                    List<Integer> coordinates = computerPlayer.makeMove(availableMoves, getSpanNumber());
+                    setClickedButton(coordinates);
+                    computerMadeMoves.add(coordinates);
+                    StackPane stackPane = (StackPane) getNodeByRowColumnIndex(coordinates.get(0), coordinates.get(1), gridPane);
+                    stackPane.getChildren().get(0).getStyleClass().add("computerCircleChoice");
+                    setGameStatus(isGameOn(computerMadeMoves));
+                    isGameEnd(gameStatus);
+                    recalculateAvailableMovesList();
+                    gameButtonControl.setDisable(false);
+                } else {
+                    gameStatusButton.setDisable(false);
+                    gameStatusButton.textProperty().setValue("REMIS");
+                    confirmButton.setDisable(true);
+                    gameButtonControl.setDisable(true);
                 }
+            }
         });
+    }
+
+    private void isGameEnd(boolean gameStatus) {
+        if (gameStatus) {
+            gameStatusButton.setDisable(false);
+            gameStatusButton.textProperty().setValue("ZWYCIĘŻYŁEŚ");
+            confirmButton.setDisable(true);
+            gameButtonControl.setDisable(true);
+        }
     }
 
     private void setEasyButtonEvent() {
@@ -255,6 +269,7 @@ public class GameController implements Initializable {
                         setClicked(false);
                         setClickedButton(buttonCoordinates);
                         humanMadeMoves.add(buttonCoordinates);
+                        gameButtonControl.setDisable(true);
                     }
                     else if (event.getButton() == MouseButton.SECONDARY && !isClicked() && getAvailableMoves().contains(buttonCoordinates)) {
                         if(circle.getStyleClass().toString().equals("humanCircleChoice")) {
@@ -262,6 +277,7 @@ public class GameController implements Initializable {
                         }
                         circle.getStyleClass().remove("humanCircleChoice");
                         circle.getStyleClass().add("defaultShape");
+                        humanMadeMoves.remove(clickedButton);
                         System.out.println(isClicked());
                     }
                 }
@@ -277,11 +293,9 @@ public class GameController implements Initializable {
 
     private void recalculateAvailableMovesList() {
         availableMoves.remove(clickedButton);
-        System.out.println("Wybrany przycik: " + clickedButton);
-        System.out.println("Dostępne ruchy: " + availableMoves);
-        System.out.println("Human made moves: " + humanMadeMoves);
-        System.out.println("Computer made moves: " + computerMadeMoves);
-        System.out.println("Wyniki " + winningMoves());
+        System.out.println("Dostępne ruchy " + availableMoves);
+        System.out.println("Ruchy człowieka " + humanMadeMoves);
+        System.out.println("Ruchy komputera " + computerMadeMoves);
     }
 
     private boolean isGameOn(List<List<Integer>> madeMoves) {
