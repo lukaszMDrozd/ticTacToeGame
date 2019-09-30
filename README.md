@@ -28,6 +28,15 @@ HARD (4x4)
 + Start rozgrywki następuję po wybraniu przycisku **START_GAME**.  
 + Użytkownik poprzez wciśnięcie prawego przycisku myszki w wybranym polu podświetla okrąg.  
 + Wybierając lewy przycisk myszki użytkownik może odznaczyć wybrane pole.  
-+ Przycisk RESET_MOVE ma na celu umożliwienie wykonania kolejnego ruchu w miejsce cofniętego.  
-+ Potwierdzenie ruchu możliwe jest poprzez wybranie przycisku CONFIRM_MOVE przez co komputer wykonuje swój ruch.
-+ By wykonać kolejny ruch należy wybrać MAKE_MOVE ponownie.
++ Przycisk **RESET_MOVE** ma na celu umożliwienie wykonania kolejnego ruchu w miejsce cofniętego.  
++ Potwierdzenie ruchu możliwe jest poprzez wybranie przycisku **CONFIRM_MOVE** przez co komputer wykonuje swój ruch.
++ By wykonać kolejny ruch należy wybrać **MAKE_MOVE** ponownie.
++ W zależności od wybranego poziomu w celu osiągnięcia wygranej należy zaznaczyć poziomo, pionowo lub po skosie, odpowiednią liczbę okręgów:
+
+| EASY | MEDIUM | HARD |
+|:----:|:------:|:----:|
+|   3  |   4    |   5  |
+
++ Wynik rozgrywki jest wyświetlany w opisie przycisku w górnym menu. Jego kliknięcie prawym przyciskiem myszki resetuje rozgrywkę.
+ 
+ 
