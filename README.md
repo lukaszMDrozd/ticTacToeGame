@@ -2,9 +2,10 @@
 
 Gra zawiera dynamicznie tworzony widok z polami.
 Dostępne są poziomy:
-EASY (2x2)
-MEDIUM (3x3)
-HARD (4x4)
+
+- EASY (3x3)
+- MEDIUM (4x4)
+- HARD (5x5)
 
 ## URUCHOMIENIE PROJEKTU
 + W projekcie użyto Java w wersji 11: **OpenJDK 11.0.4**
