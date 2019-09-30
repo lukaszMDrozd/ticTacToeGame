@@ -19,7 +19,7 @@
 
             </Button>
 
-            <Button fx:id="gameStatusButton" alignment="CENTER" text=" " styleClass="topElements">
+            <Button fx:id="gameStatusButton" alignment="CENTER" styleClass="topElements">
 
             </Button>
         </HBox>
