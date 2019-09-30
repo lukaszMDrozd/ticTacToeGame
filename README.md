@@ -10,7 +10,7 @@ HARD (4x4)
 + W projekcie użyto Java w wersji 11: **OpenJDK 11.0.4**
 
 + W związku z użyciem JavaFX konieczne jest pobranie **javafx-jdk-11.0.2** i dodanie do globalnych zmiennych projektu jak to przedstawiono poniżej:
-![JavaFX-Settings](Screenshot from 2019-09-30 22-20-23.png)
+![JavaFX-Settings](JavaFX_settings.png)
 
 + W drzewie projektu należy oznaczyć katalog ~/ticTacToeGame/src jako **SourceRoot**
 
