@@ -157,6 +157,7 @@ public class GameController implements Initializable {
             hardButton.setDisable(true);
             confirmMoveButtonEvent();
             confirmButton.setDisable(true);
+
             if (getActualPlayer().equals(game.getHumanPlayer())) {
                 setClicked(true);
                 setGridButtonsClickEvent(getSpanNumber());
@@ -169,6 +170,7 @@ public class GameController implements Initializable {
             setGameStatus(isGameOn(humanMadeMoves));
             isGameEnd();
             recalculateAvailableMovesList();
+
             if(!gameStatus) {
                 actualPlayer = computerPlayer;
                 if (availableMoves.size() != 0) {
@@ -198,6 +200,7 @@ public class GameController implements Initializable {
             gameStatusButton.setVisible(true);
             confirmButton.setDisable(true);
             gameButtonControl.setDisable(true);
+
             if(actualPlayer == humanPlayer) {
                 gameStatusButton.textProperty().setValue("ZWYCIĘŻYŁEŚ");
             } else if (actualPlayer == computerPlayer){
@@ -208,6 +211,7 @@ public class GameController implements Initializable {
 
     private void setEasyButtonEvent() {
         easyButton.setOnMouseClicked(event -> {
+
             if (event.getButton() == MouseButton.PRIMARY) {
                 setSpanNumber(2);
                 gridPane.getChildren().clear();
@@ -219,6 +223,7 @@ public class GameController implements Initializable {
 
     private void setMediumButtonEvent() {
         mediumButton.setOnMouseClicked(event -> {
+
             if (event.getButton() == MouseButton.PRIMARY) {
                 setSpanNumber(3);
                 gridPane.getChildren().clear();
@@ -230,6 +235,7 @@ public class GameController implements Initializable {
 
     private void setHardButtonEvent() {
         hardButton.setOnMouseClicked(event -> {
+
             if (event.getButton() == MouseButton.PRIMARY) {
                 setSpanNumber(4);
                 gridPane.getChildren().clear();
@@ -255,10 +261,10 @@ public class GameController implements Initializable {
                 }
             }
             for (Node node : gridPane.getChildren()) {
-                if (!(GridPane.getRowIndex(node) == spanNumber)) {
+                if (GridPane.getRowIndex(node) != spanNumber) {
                     node.getStyleClass().add("gridRow");
                 }
-                if (!(GridPane.getColumnIndex(node) == spanNumber)) {
+                if (GridPane.getColumnIndex(node) != spanNumber) {
                     node.getStyleClass().add("gridColumn");
                 }
             }
@@ -298,6 +304,7 @@ public class GameController implements Initializable {
                 buttonCoordinates.add(GridPane.getColumnIndex(button.getParent()));
 
                 if(actualPlayer.equals(game.getHumanPlayer()) && !circle.getStyleClass().toString().equals("computerCircleChoice")) {
+
                     if (event.getButton() == MouseButton.PRIMARY && isClicked()) {
                         circle.getStyleClass().remove("defaultShape");
                         circle.getStyleClass().add("humanCircleChoice");
@@ -309,6 +316,7 @@ public class GameController implements Initializable {
                         confirmButton.setDisable(false);
                     }
                     else if (event.getButton() == MouseButton.SECONDARY && !isClicked() && getAvailableMoves().contains(buttonCoordinates)) {
+
                         if(circle.getStyleClass().toString().equals("humanCircleChoice")) {
                             resetButton.setDisable(false);
                         }
@@ -349,6 +357,7 @@ public class GameController implements Initializable {
     private List<List<List<Integer>>> winningMoves() {
         List<List<List<Integer>>> result = new ArrayList<>();
 
+        //tworzy wygrywajace listy poziom po poziomie
         for (int row = 0; row <= spanNumber; row++) {
             List<List<Integer>> stepResult = new ArrayList<>();
             for (int column = 0; column <= spanNumber; column++) {
@@ -394,6 +403,7 @@ public class GameController implements Initializable {
             result.add(stepResult);
         }
 
+        //tworzy wygrywajace listy kolumna po kolumnie
         for (int column = 0; column <= spanNumber; column++) {
             List<List<Integer>> stepResult = new ArrayList<>();
             for (int row = 0; row <= spanNumber; row++) {
@@ -439,6 +449,7 @@ public class GameController implements Initializable {
             result.add(stepResult);
         }
 
+        //Tworzy wygrywajacą listę przekątna w kierunku: \
         List<List<Integer>> stepResultX = new ArrayList<>();
         for(int i = 0; i <= spanNumber; i++) {
             List<Integer> resultAtom = new ArrayList<>();
@@ -448,6 +459,7 @@ public class GameController implements Initializable {
         }
         result.add(stepResultX);
 
+        //Tworzy wygrywajacą listę przekątna w kierunku: /
         List<List<Integer>> stepResultY = new ArrayList<>();
         for(int i = 0, j = spanNumber; i <= spanNumber && j >= 0; i++, j--) {
             List<Integer> resultAtom = new ArrayList<>();
