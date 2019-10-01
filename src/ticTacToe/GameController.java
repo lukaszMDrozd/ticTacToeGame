@@ -3,6 +3,7 @@ package ticTacToe;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.geometry.Point2D;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.input.MouseButton;
@@ -62,20 +63,15 @@ public class GameController implements Initializable {
         this.clicked = clicked;
     }
 
+    private List<Point2D> availableMoves;
 
-    private List<List<Integer>> availableMoves;
-
-    private List<List<Integer>> getAvailableMoves() {
-        return availableMoves;
-    }
-
-    private void setAvailableMoves(List<List<Integer>> availableMoves) {
+    private void setAvailableMoves(List<Point2D> availableMoves) {
         this.availableMoves = availableMoves;
     }
 
-    private List<Integer> clickedButton;
+    private Point2D clickedButton;
 
-    private void setClickedButton(List<Integer> clickedButton) {
+    private void setClickedButton(Point2D clickedButton) {
         this.clickedButton = clickedButton;
     }
 
@@ -95,13 +91,13 @@ public class GameController implements Initializable {
 
     private Game game;
 
-    private List<List<Integer>> humanMadeMoves;
+    private List<Point2D> humanMadeMoves;
 
-    private List<List<Integer>> computerMadeMoves;
+    private List<Point2D> computerMadeMoves;
 
     private boolean gameStatus;
 
-    private List<List<List<Integer>>> winningMoves;
+    private List<List<Point2D>> winningMoves;
 
     private void setGameStatus(boolean gameStatus) {
         this.gameStatus = gameStatus;
@@ -171,28 +167,37 @@ public class GameController implements Initializable {
             isGameEnd();
             recalculateAvailableMovesList();
 
+
             if(!gameStatus) {
                 actualPlayer = computerPlayer;
                 if (availableMoves.size() != 0) {
-                    List<Integer> coordinates = computerPlayer.makeMove(availableMoves, getSpanNumber());
+                    Point2D coordinates = computerPlayer.makeMove(availableMoves);
                     setClickedButton(coordinates);
                     computerMadeMoves.add(coordinates);
-                    StackPane stackPane = (StackPane) getNodeByRowColumnIndex(coordinates.get(0), coordinates.get(1), gridPane);
+                    StackPane stackPane = (StackPane) getNodeByRowColumnIndex(coordinates.getX(), coordinates.getY(), gridPane);
                     stackPane.getChildren().get(0).getStyleClass().add("computerCircleChoice");
+                    stackPane.getChildren().get(1).setDisable(true);
                     setGameStatus(isGameOn(computerMadeMoves));
                     recalculateAvailableMovesList();
                     gameButtonControl.setDisable(false);
                     isGameEnd();
                     actualPlayer = humanPlayer;
+                    if(availableMoves.size() == 0) {
+                        gameDraw();
+                    }
                 } else {
-                    gameStatusButton.setVisible(true);
-                    gameStatusButton.textProperty().setValue("REMIS");
-                    confirmButton.setDisable(true);
-                    gameButtonControl.setDisable(true);
+                    gameDraw();
                 }
             }
             confirmButton.setDisable(true);
         });
+    }
+
+    private void gameDraw() {
+        gameStatusButton.setVisible(true);
+        gameStatusButton.textProperty().setValue("REMIS");
+        confirmButton.setDisable(true);
+        gameButtonControl.setDisable(true);
     }
 
     private void isGameEnd() {
@@ -245,16 +250,14 @@ public class GameController implements Initializable {
         });
     }
 
-    private List<List<Integer>> makeGrid(int spanNumber) {
-        List<List<Integer>> buttonStartingCoordinates = new ArrayList<>();
+        private List<Point2D> makeGrid(int spanNumber) {
+        List<Point2D> buttonStartingCoordinates = new ArrayList<>();
 
         for (int row = 0; row <= spanNumber; row++) {
             for (int column = 0; column <= spanNumber; column++) {
                 try {
                     gridPane.add(new Square().makeSquare(), row, column);
-                    List<Integer> buttonCoordinates = new ArrayList<>();
-                    buttonCoordinates.add(row);
-                    buttonCoordinates.add(column);
+                    Point2D buttonCoordinates = new Point2D(row,column);
                     buttonStartingCoordinates.add(buttonCoordinates);
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -281,7 +284,7 @@ public class GameController implements Initializable {
 
     }
 
-    private Node getNodeByRowColumnIndex(final int row, final int column, GridPane gridPane) {
+    private Node getNodeByRowColumnIndex(final double row, final double column, GridPane gridPane) {
         Node result = null;
         ObservableList<Node> children = gridPane.getChildren();
 
@@ -297,25 +300,21 @@ public class GameController implements Initializable {
     private void setButtonClickEvent(StackPane stackPane) {
         Circle circle = (Circle) stackPane.getChildren().get(0);
         Button button = (Button) stackPane.getChildren().get(1);
-
             button.setOnMouseClicked(event -> {
-                List<Integer> buttonCoordinates = new ArrayList<>();
-                buttonCoordinates.add(GridPane.getRowIndex(button.getParent()));
-                buttonCoordinates.add(GridPane.getColumnIndex(button.getParent()));
+                Point2D buttonCoordinates = new Point2D(GridPane.getRowIndex(button.getParent()), GridPane.getColumnIndex(button.getParent()));
 
                 if(actualPlayer.equals(game.getHumanPlayer()) && !circle.getStyleClass().toString().equals("computerCircleChoice")) {
 
-                    if (event.getButton() == MouseButton.PRIMARY && isClicked()) {
+                    if (event.getButton() == MouseButton.PRIMARY && isClicked() && availableMoves.contains(buttonCoordinates)) {
                         circle.getStyleClass().remove("defaultShape");
                         circle.getStyleClass().add("humanCircleChoice");
-
                         setClicked(false);
                         setClickedButton(buttonCoordinates);
                         humanMadeMoves.add(buttonCoordinates);
                         gameButtonControl.setDisable(true);
                         confirmButton.setDisable(false);
                     }
-                    else if (event.getButton() == MouseButton.SECONDARY && !isClicked() && getAvailableMoves().contains(buttonCoordinates)) {
+                    else if (event.getButton() == MouseButton.SECONDARY && !isClicked() && availableMoves.contains(buttonCoordinates)) {
 
                         if(circle.getStyleClass().toString().equals("humanCircleChoice")) {
                             resetButton.setDisable(false);
@@ -344,130 +343,51 @@ public class GameController implements Initializable {
         System.out.println("Ruchy wygrywające " + winningMoves());
     }
 
-    private boolean isGameOn(List<List<Integer>> madeMoves) {
+    private boolean isGameOn(List<Point2D> madeMoves) {
         int counter = (spanNumber * 2) + 4;
         for (int i = 0; i < counter; i++) {
-            if(madeMoves.containsAll(winningMoves.get(i)) && madeMoves.size() > spanNumber) {
-                return true;
+                if(madeMoves.containsAll(winningMoves.get(i)) && madeMoves.size() > spanNumber) {
+                    return true;
             }
         }
         return false;
     }
 
-    private List<List<List<Integer>>> winningMoves() {
-        List<List<List<Integer>>> result = new ArrayList<>();
+    private List<List<Point2D>> winningMoves() {
+        List<List<Point2D>> result = new ArrayList<>();
 
-        //tworzy wygrywajace listy poziom po poziomie
+        //tworzy wygrywajace listy poziom po poziomie i dodaje do listy wynikowej
         for (int row = 0; row <= spanNumber; row++) {
-            List<List<Integer>> stepResult = new ArrayList<>();
+            List<Point2D> rowList = new ArrayList<>();
             for (int column = 0; column <= spanNumber; column++) {
-                switch (row) {
-                    case 0: {
-                        List<Integer> resultAtom = new ArrayList<>();
-                        resultAtom.add(0);
-                        resultAtom.add(column);
-                        stepResult.add(resultAtom);
-                        break;
-                    }
-
-                    case 1: {
-                        List<Integer> resultAtom = new ArrayList<>();
-                        resultAtom.add(1);
-                        resultAtom.add(column);
-                        stepResult.add(resultAtom);
-                        break;
-                    }
-                    case 2: {
-                        List<Integer> resultAtom = new ArrayList<>();
-                        resultAtom.add(2);
-                        resultAtom.add(column);
-                        stepResult.add(resultAtom);
-                        break;
-                    }
-                    case 3: {
-                        List<Integer> resultAtom = new ArrayList<>();
-                        resultAtom.add(3);
-                        resultAtom.add(column);
-                        stepResult.add(resultAtom);
-                        break;
-                    }
-                    case 4: {
-                        List<Integer> resultAtom = new ArrayList<>();
-                        resultAtom.add(4);
-                        resultAtom.add(column);
-                        stepResult.add(resultAtom);
-                        break;
-                    }
-                }
+                rowList.add(new Point2D(row, column));
             }
-            result.add(stepResult);
+            result.add(rowList);
         }
 
-        //tworzy wygrywajace listy kolumna po kolumnie
+        //tworzy wygrywajace listy kolumna po kolumnie i dodaje do listy wynikowej
         for (int column = 0; column <= spanNumber; column++) {
-            List<List<Integer>> stepResult = new ArrayList<>();
+            List<Point2D> columnList = new ArrayList<>();
             for (int row = 0; row <= spanNumber; row++) {
-                switch (column) {
-                    case 0: {
-                        List<Integer> resultAtom = new ArrayList<>();
-                        resultAtom.add(row);
-                        resultAtom.add(0);
-                        stepResult.add(resultAtom);
-                        break;
-                    }
-
-                    case 1: {
-                        List<Integer> resultAtom = new ArrayList<>();
-                        resultAtom.add(row);
-                        resultAtom.add(1);
-                        stepResult.add(resultAtom);
-                        break;
-                    }
-                    case 2: {
-                        List<Integer> resultAtom = new ArrayList<>();
-                        resultAtom.add(row);
-                        resultAtom.add(2);
-                        stepResult.add(resultAtom);
-                        break;
-                    }
-                    case 3: {
-                        List<Integer> resultAtom = new ArrayList<>();
-                        resultAtom.add(row);
-                        resultAtom.add(3);
-                        stepResult.add(resultAtom);
-                        break;
-                    }
-                    case 4: {
-                        List<Integer> resultAtom = new ArrayList<>();
-                        resultAtom.add(row);
-                        resultAtom.add(4);
-                        stepResult.add(resultAtom);
-                        break;
-                    }
-                }
+                columnList.add(new Point2D(row, column));
             }
-            result.add(stepResult);
+            result.add(columnList);
         }
 
-        //Tworzy wygrywajacą listę przekątna w kierunku: \
-        List<List<Integer>> stepResultX = new ArrayList<>();
+        //Tworzy wygrywajacą listę przekątną w kierunku: \ i dodaje do listy wynikowej
+        List<Point2D> leftDiagonal = new ArrayList<>();
         for(int i = 0; i <= spanNumber; i++) {
-            List<Integer> resultAtom = new ArrayList<>();
-            resultAtom.add(i);
-            resultAtom.add(i);
-            stepResultX.add(resultAtom);
+            leftDiagonal.add(new Point2D(i,i));
         }
-        result.add(stepResultX);
+        result.add(leftDiagonal);
 
-        //Tworzy wygrywajacą listę przekątna w kierunku: /
-        List<List<Integer>> stepResultY = new ArrayList<>();
+        //Tworzy wygrywajacą listę przekątna w kierunku: / i dodaje do listy wynikowej
+        List<Point2D> rightDiagonal = new ArrayList<>();
         for(int i = 0, j = spanNumber; i <= spanNumber && j >= 0; i++, j--) {
-            List<Integer> resultAtom = new ArrayList<>();
-            resultAtom.add(j);
-            resultAtom.add(i);
-            stepResultY.add(resultAtom);
+            rightDiagonal.add(new Point2D(j,i));
         }
-        result.add(stepResultY);
+
+        result.add(rightDiagonal);
 
         return result;
     }

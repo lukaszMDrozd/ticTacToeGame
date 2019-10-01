@@ -1,8 +1,11 @@
 package ticTacToe;
 
+import javafx.geometry.Point2D;
+
 import java.util.List;
 
 public interface Player {
 
-    List<Integer> makeMove(List<List<Integer>> availableMoves, int spanNumber);
+    Point2D makeMove(List<Point2D> availableMoves);
 }
+

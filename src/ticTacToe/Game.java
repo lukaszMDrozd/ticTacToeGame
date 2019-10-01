@@ -2,8 +2,8 @@ package ticTacToe;
 
 public class Game {
 
-    private HumanPlayer humanPlayer;
-    private ComputerPlayer computerPlayer;
+    private Player humanPlayer;
+    private Player computerPlayer;
 
     public Game(HumanPlayer humanPlayer, ComputerPlayer computerPlayer) {
         this.humanPlayer = humanPlayer;

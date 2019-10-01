@@ -1,5 +1,7 @@
 package ticTacToe;
 
+import javafx.geometry.Point2D;
+
 import java.util.List;
 
 public class HumanPlayer implements Player {
@@ -11,7 +13,7 @@ public class HumanPlayer implements Player {
     }
 
     @Override
-    public List<Integer> makeMove(List<List<Integer>> availableMoves, int spanNumber) {
+    public Point2D makeMove(List<Point2D> availableMoves) {
 
         System.out.println("Ruch: " + getHumanName());
         return null;
