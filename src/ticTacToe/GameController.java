@@ -356,7 +356,7 @@ public class GameController implements Initializable {
     private List<List<Point2D>> winningMoves() {
         List<List<Point2D>> result = new ArrayList<>();
 
-        //Creates winning lists a row by row and adding to result's list
+        // Creates winning lists a row by row and adding to result's list
         for (int row = 0; row <= spanNumber; row++) {
             List<Point2D> rowList = new ArrayList<>();
             for (int column = 0; column <= spanNumber; column++) {
@@ -365,7 +365,7 @@ public class GameController implements Initializable {
             result.add(rowList);
         }
 
-        //Creates winning lists a column by column and adding to result's list
+        // Creates winning lists a column by column and adding to result's list
         for (int column = 0; column <= spanNumber; column++) {
             List<Point2D> columnList = new ArrayList<>();
             for (int row = 0; row <= spanNumber; row++) {
@@ -374,14 +374,14 @@ public class GameController implements Initializable {
             result.add(columnList);
         }
 
-        //Creates diagonal winning list in direction: \ and adding to result list
+        // Creates diagonal winning list in direction: \ and adding to result list
         List<Point2D> leftDiagonal = new ArrayList<>();
         for(int i = 0; i <= spanNumber; i++) {
             leftDiagonal.add(new Point2D(i,i));
         }
         result.add(leftDiagonal);
 
-        //Creates diagonal winning list in direction: / and adding to result list
+        // Creates diagonal winning list in direction: / and adding to result list
         List<Point2D> rightDiagonal = new ArrayList<>();
         for(int i = 0, j = spanNumber; i <= spanNumber && j >= 0; i++, j--) {
             rightDiagonal.add(new Point2D(j,i));
