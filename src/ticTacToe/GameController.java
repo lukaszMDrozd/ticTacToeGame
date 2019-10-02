@@ -182,7 +182,7 @@ public class GameController implements Initializable {
                     gameButtonControl.setDisable(false);
                     isGameEnd();
                     actualPlayer = humanPlayer;
-                    if(availableMoves.size() == 0) {
+                    if(availableMoves.size() == 0 && !gameStatus) {
                         gameDraw();
                     }
                 } else {
@@ -319,11 +319,10 @@ public class GameController implements Initializable {
                         if(circle.getStyleClass().toString().equals("humanCircleChoice")) {
                             resetButton.setDisable(false);
                             confirmButton.setDisable(true);
+                            circle.getStyleClass().remove("humanCircleChoice");
+                            circle.getStyleClass().add("defaultShape");
+                            humanMadeMoves.remove(clickedButton);
                         }
-                        circle.getStyleClass().remove("humanCircleChoice");
-                        circle.getStyleClass().add("defaultShape");
-                        humanMadeMoves.remove(clickedButton);
-                        System.out.println(isClicked());
                     }
                 }
             });
@@ -357,7 +356,7 @@ public class GameController implements Initializable {
     private List<List<Point2D>> winningMoves() {
         List<List<Point2D>> result = new ArrayList<>();
 
-        //tworzy wygrywajace listy poziom po poziomie i dodaje do listy wynikowej
+        //Creates winning lists a row by row and adding to result's list
         for (int row = 0; row <= spanNumber; row++) {
             List<Point2D> rowList = new ArrayList<>();
             for (int column = 0; column <= spanNumber; column++) {
@@ -366,7 +365,7 @@ public class GameController implements Initializable {
             result.add(rowList);
         }
 
-        //tworzy wygrywajace listy kolumna po kolumnie i dodaje do listy wynikowej
+        //Creates winning lists a column by column and adding to result's list
         for (int column = 0; column <= spanNumber; column++) {
             List<Point2D> columnList = new ArrayList<>();
             for (int row = 0; row <= spanNumber; row++) {
@@ -375,14 +374,14 @@ public class GameController implements Initializable {
             result.add(columnList);
         }
 
-        //Tworzy wygrywajacą listę przekątną w kierunku: \ i dodaje do listy wynikowej
+        //Creates diagonal winning list in direction: \ and adding to result list
         List<Point2D> leftDiagonal = new ArrayList<>();
         for(int i = 0; i <= spanNumber; i++) {
             leftDiagonal.add(new Point2D(i,i));
         }
         result.add(leftDiagonal);
 
-        //Tworzy wygrywajacą listę przekątna w kierunku: / i dodaje do listy wynikowej
+        //Creates diagonal winning list in direction: / and adding to result list
         List<Point2D> rightDiagonal = new ArrayList<>();
         for(int i = 0, j = spanNumber; i <= spanNumber && j >= 0; i++, j--) {
             rightDiagonal.add(new Point2D(j,i));
