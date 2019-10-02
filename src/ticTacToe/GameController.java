@@ -318,6 +318,7 @@ public class GameController implements Initializable {
 
                         if(circle.getStyleClass().toString().equals("humanCircleChoice")) {
                             resetButton.setDisable(false);
+                            confirmButton.setDisable(true);
                         }
                         circle.getStyleClass().remove("humanCircleChoice");
                         circle.getStyleClass().add("defaultShape");

@@ -38,6 +38,6 @@ Dostępne są poziomy:
 |:----:|:------:|:----:|
 |   3  |   4    |   5  |
 
-+ Wynik rozgrywki jest wyświetlany w opisie przycisku w górnym menu. Jego kliknięcie prawym przyciskiem myszki resetuje rozgrywkę.
++ Wynik rozgrywki jest wyświetlany w opisie przycisku w górnym menu. Jego kliknięcie lewym przyciskiem myszki resetuje rozgrywkę.
  
  
